@@ -5,7 +5,11 @@
 [![](https://user-images.githubusercontent.com/4292308/153364565-7a545d26-e617-4a33-a919-ff90d8feda3d.svg)](https://github.com/SnosMe/awakened-poe-trade/issues/22)
 
 
-➡ [Download for Windows & Linux](https://snosme.github.io/awakened-poe-trade/download) ⬅
+> **Covens of Umbra (3.30) build.** This is an unofficial fork of [SnosMe/awakened-poe-trade](https://github.com/SnosMe/awakened-poe-trade) with game data for Path of Exile 3.30. Only Windows builds are provided. For Linux or macOS, use the [official downloads](https://snosme.github.io/awakened-poe-trade/download).
+
+➡ Download for Windows 10+: [Installer](https://github.com/Djwith86/awakened-poe-trade/releases/download/v3.29.109-covens.1/Awakened-PoE-Trade-Setup-3.29.109-covens.1.exe) · [Portable](https://github.com/Djwith86/awakened-poe-trade/releases/download/v3.29.109-covens.1/Awakened-PoE-Trade-3.29.109-covens.1.exe) · [All releases](https://github.com/Djwith86/awakened-poe-trade/releases) ⬅
+
+The installer isn't code-signed, so Windows SmartScreen will warn you on first run. Click *More info*, then *Run anyway*.
 
 ## Tool showcase
 
