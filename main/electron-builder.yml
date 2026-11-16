@@ -1,5 +1,7 @@
 publish:
-  - "github"
+  - provider: "github"
+    owner: "Djwith86"
+    repo: "awakened-poe-trade"
 productName: "Awakened PoE Trade"
 npmRebuild: false
 toolsets:
@@ -15,6 +17,7 @@ files:
 extraMetadata:
   main: "main.js"
 nsis:
+  artifactName: "Awakened.PoE.Trade.Setup.${version}.${ext}"
   oneClick: false
   allowToChangeInstallationDirectory: true
 win:
