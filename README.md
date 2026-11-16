@@ -11,6 +11,8 @@
 
 The installer isn't code-signed, so Windows SmartScreen will warn you on first run. Click *More info*, then *Run anyway*.
 
+Updating for a new league: see [LEAGUE_UPDATE.md](./LEAGUE_UPDATE.md).
+
 ## Tool showcase
 
 | Gem | Rare | Unique | Currency |
