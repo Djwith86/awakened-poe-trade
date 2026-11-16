@@ -216,6 +216,7 @@ function findInDatabase (item: ParserState) {
       // ("Scorpion Stinger"), so resolve to it and search by that.
       if (!info?.length) {
         info = findVisceraByTieredName(item.name)
+        if (info) item.tieredName = item.name
       }
       if (info?.length && info.every(isVisceraLike)) {
         item.rarity = ItemRarity.Normal

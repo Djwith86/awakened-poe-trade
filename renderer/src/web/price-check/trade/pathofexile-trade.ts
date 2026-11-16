@@ -88,6 +88,7 @@ interface FilterRange { min?: number, max?: number }
 interface TradeRequest {
   query: {
     status: { option: 'online' | 'securable' | 'available' | 'any' }
+    term?: string
     name?: string | { discriminator: string, option: string }
     type?: string | { discriminator: string, option: string }
     stats: Array<{
@@ -302,13 +303,17 @@ export function createTradeRequest (filters: ItemFilters, stats: FilterOrGroup[]
     activeSearch = activeSearch.sub
   }
 
-  if (activeSearch.nameTrade) {
+  if (activeSearch.term) {
+    query.term = activeSearch.term
+  } else if (activeSearch.nameTrade) {
     query.name = nameToQuery(activeSearch.nameTrade, activeSearch.discriminatorTrade)
   } else if (activeSearch.name) {
     query.name = nameToQuery(activeSearch.name, activeSearch.discriminatorTrade)
   }
 
-  if (activeSearch.baseTypeTrade) {
+  if (activeSearch.term) {
+    // type is covered by the free-text search
+  } else if (activeSearch.baseTypeTrade) {
     query.type = nameToQuery(activeSearch.baseTypeTrade, activeSearch.discriminatorTrade)
   } else if (activeSearch.baseType) {
     query.type = nameToQuery(activeSearch.baseType, activeSearch.discriminatorTrade)

@@ -14,6 +14,8 @@ interface SearchFilter {
   baseTypeTrade?: string
   discriminatorTrade?: string
   category?: ItemCategory
+  // free-text "Custom Search" on the trade site, replaces name/type
+  term?: string
 }
 
 interface SearchFilterSub extends SearchFilter {

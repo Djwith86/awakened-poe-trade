@@ -44,6 +44,7 @@ export interface ParsedItem {
   mapTier?: number
   mapMoreMaps?: number
   mapMoreScarabs?: number
+  tieredName?: string // Wickerman Viscera, e.g. "Greater Scorpion Stinger"
   mapMoreCurrency?: number
   mapMoreDivCards?: number
   heistBlueprint?: {

@@ -218,6 +218,13 @@ export function createFilters (
       nameTrade: t(opts, item.info),
       baseTypeTrade: t(opts, item.uniqueBase)
     }
+  } else if (item.tieredName) {
+    // "Greater Scorpion Stinger": trade has no type for the tiered name,
+    // but its Custom Search (free-text term) matches it exactly
+    filters.searchExact = {
+      baseType: item.tieredName,
+      term: item.tieredName
+    }
   } else {
     filters.searchExact = {
       baseType: item.info.name,
