@@ -55,12 +55,28 @@ jobs:
         npm ci
         npm run build
 
-    - name: Build and publish installer
+    - name: Build installer
       if: steps.check.outputs.skip == 'false'
       working-directory: ./main
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         npm ci
         npm run build
-        npx electron-builder build --win nsis --x64 --publish always
+        npx electron-builder build --win nsis --x64 --publish never
+
+    - name: Create tag and publish release
+      if: steps.check.outputs.skip == 'false'
+      shell: bash
+      working-directory: ./main/dist
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        VERSION: ${{ steps.version.outputs.version }}
+      run: |
+        gh release create "v$VERSION" \
+          --repo "$GITHUB_REPOSITORY" \
+          --target "$GITHUB_SHA" \
+          --title "$VERSION" \
+          --generate-notes \
+          --latest \
+          "Awakened.PoE.Trade.Setup.$VERSION.exe" \
+          "Awakened.PoE.Trade.Setup.$VERSION.exe.blockmap" \
+          latest.yml
