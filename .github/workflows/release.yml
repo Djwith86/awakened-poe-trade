@@ -30,14 +30,21 @@ jobs:
       shell: bash
       run: echo "version=$(node -p "require('./main/package.json').version")" >> "$GITHUB_OUTPUT"
 
-    - name: Skip if release already exists
+    - name: Skip if release is already complete
       id: check
       shell: bash
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        VERSION: ${{ steps.version.outputs.version }}
       run: |
-        if gh release view "v${{ steps.version.outputs.version }}" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-          echo "Release v${{ steps.version.outputs.version }} already exists, nothing to do."
+        assets=$(gh release view "v$VERSION" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name' 2>/dev/null || true)
+        if [ -n "$assets" ] || gh release view "v$VERSION" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+          echo "exists=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "exists=false" >> "$GITHUB_OUTPUT"
+        fi
+        if echo "$assets" | grep -qx "latest.yml"; then
+          echo "Release v$VERSION already has latest.yml, nothing to do."
           echo "skip=true" >> "$GITHUB_OUTPUT"
         else
           echo "skip=false" >> "$GITHUB_OUTPUT"
@@ -71,12 +78,16 @@ jobs:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         VERSION: ${{ steps.version.outputs.version }}
       run: |
-        gh release create "v$VERSION" \
-          --repo "$GITHUB_REPOSITORY" \
-          --target "$GITHUB_SHA" \
-          --title "$VERSION" \
-          --generate-notes \
-          --latest \
-          "Awakened.PoE.Trade.Setup.$VERSION.exe" \
-          "Awakened.PoE.Trade.Setup.$VERSION.exe.blockmap" \
-          latest.yml
+        files=("Awakened.PoE.Trade.Setup.$VERSION.exe" "Awakened.PoE.Trade.Setup.$VERSION.exe.blockmap" latest.yml)
+        if [ "${{ steps.check.outputs.exists }}" = "true" ]; then
+          # release was created by hand or by an earlier failed run: fill in the files
+          gh release upload "v$VERSION" "${files[@]}" --repo "$GITHUB_REPOSITORY" --clobber
+          gh release edit "v$VERSION" --repo "$GITHUB_REPOSITORY" --draft=false --prerelease=false --latest
+        else
+          gh release create "v$VERSION" "${files[@]}" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "$VERSION" \
+            --generate-notes \
+            --latest
+        fi
