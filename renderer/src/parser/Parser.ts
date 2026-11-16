@@ -177,6 +177,23 @@ function normalizeName (item: ParserState) {
   }
 }
 
+function isVisceraLike (info: BaseType) {
+  return info.namespace === 'ITEM' && info.w != null && info.h != null &&
+    !info.craftable && !info.unique && !info.exchangeable && !info.tradeTag
+}
+
+function findVisceraByTieredName (name: string): BaseType[] | undefined {
+  // try progressively shorter suffixes, longest first; works for languages
+  // with and without spaces between the tier word and the base name
+  for (let i = 1; i < name.length - 1; i += 1) {
+    const candidate = name.slice(i).trimStart()
+    if (candidate.length < 2) continue
+    const found = ITEM_BY_TRANSLATED('ITEM', candidate)
+    if (found?.length && found.every(isVisceraLike)) return found
+  }
+  return undefined
+}
+
 function findInDatabase (item: ParserState) {
   let info: BaseType[] | undefined
   if (item.category === ItemCategory.DivinationCard) {
@@ -193,6 +210,25 @@ function findInDatabase (item: ParserState) {
     info = ITEM_BY_TRANSLATED('UNIQUE', item.name)
   } else {
     info = ITEM_BY_TRANSLATED('ITEM', item.baseType ?? item.name)
+    if (item.rarity === undefined && !item.category && !item.baseType) {
+      // Wickerman Viscera have no "Rarity:" line and may have a tier prefix
+      // ("Greater Scorpion Stinger"). Trade lists every tier as its own type,
+      // so keep the full name and only borrow the rest from the base entry.
+      if (!info?.length) {
+        const base = findVisceraByTieredName(item.name)
+        if (base) {
+          const tier = item.name.slice(0, item.name.length - base[0].name.length)
+          info = base.map(entry => ({
+            ...entry,
+            name: item.name,
+            refName: tier + entry.refName
+          }))
+        }
+      }
+      if (info?.length && info.every(isVisceraLike)) {
+        item.rarity = ItemRarity.Normal
+      }
+    }
   }
   if (!info?.length) {
     return err('item.unknown')
