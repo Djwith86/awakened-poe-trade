@@ -212,18 +212,10 @@ function findInDatabase (item: ParserState) {
     info = ITEM_BY_TRANSLATED('ITEM', item.baseType ?? item.name)
     if (item.rarity === undefined && !item.category && !item.baseType) {
       // Wickerman Viscera have no "Rarity:" line and may have a tier prefix
-      // ("Greater Scorpion Stinger"). Trade lists every tier as its own type,
-      // so keep the full name and only borrow the rest from the base entry.
+      // ("Greater Scorpion Stinger"). Trade only knows the base type
+      // ("Scorpion Stinger"), so resolve to it and search by that.
       if (!info?.length) {
-        const base = findVisceraByTieredName(item.name)
-        if (base) {
-          const tier = item.name.slice(0, item.name.length - base[0].name.length)
-          info = base.map(entry => ({
-            ...entry,
-            name: item.name,
-            refName: tier + entry.refName
-          }))
-        }
+        info = findVisceraByTieredName(item.name)
       }
       if (info?.length && info.every(isVisceraLike)) {
         item.rarity = ItemRarity.Normal
